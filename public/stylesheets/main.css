@@ -1,0 +1,53 @@
+.thumbnail {
+  padding: 0px !important;
+}
+
+.thumbnail img {
+  width: 100%;
+}
+
+.thumbnail .caption-full {
+  padding: 9px;
+}
+
+.currentUser {
+  color: white;
+}
+
+footer{
+  bottom: 5px;
+  position: absolute;
+}
+
+img{
+  cursor: pointer;
+  transition: 0.5s all;
+}
+
+.sibling-fade:hover img:not(:hover){
+  opacity: 0.7;
+  transition: 0.5s all;
+}
+
+.jumbotron {
+  background-color:transparent !important; 
+}
+
+ .hrComment {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
+
+hr.style-two {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
+.delete-form {
+  display: inline;
+}
+
+
+
