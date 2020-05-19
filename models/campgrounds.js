@@ -7,7 +7,8 @@ var campgroundSchema = new mongoose.Schema({
     description: String,
     price : { 
             type: Number, 
-            set: setPrice
+            set: setPrice,
+            get: getPrice
             },
     author: {
              id: {
@@ -29,8 +30,8 @@ function setPrice(num) {
     return decimal.toFixed(2);
 }
 
-/* function getPrice(num) {
+function getPrice(num) {
     return num * 100;
-} */
+}
 
 module.exports = mongoose.model("Campground", campgroundSchema);
