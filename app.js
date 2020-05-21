@@ -18,15 +18,18 @@ var commentRoutes = require('./routes/comments'),
 //Database connection   
 const options = {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true
 };
-  
- mongoose.connect('mongodb://localhost:27017/yelp_camp_v11', options)
+
+const url = process.env.DATABASE_URL;
+
+mongoose.connect(url, options)
     .then(()=>{
         console.log("Connected to the DB: yelp_camp_v7");
     })
     .catch((err)=>{
-        console.log(`Error: </br> ${err}`);
+        console.log(`Error: </br> ${err.message}`);
         process.exit(1);
 });
 
