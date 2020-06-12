@@ -140,7 +140,7 @@ router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), 
         req.flash("error", err.message);
         res.redirect("back");
       } else {
-        req.flash("success", "Successfully Updated!");
+        req.flash("success", "Successfully Updated");
         res.redirect("/campgrounds/" + campground._id);
       }
     });
