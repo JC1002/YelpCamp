@@ -11,19 +11,23 @@ router.get('/',(req, res)=>{
 
 //Render signing up form
 router.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', {page: 'register'});
 });
   
 //Sign up users
 router.post('/register', (req, res) => {
     let newUser = new User({username: req.body.username});
+    if(req.body.adminCode === 'secretcode') {
+      newUser.isAdmin = true;
+    }
     User.register(newUser, req.body.password, (err, user) => {
-      if(err){ 
+      if(err) { 
+        console.log(`Error ${err}`)
           req.flash('error', err.message);
           return res.redirect('/register');
       }
         passport.authenticate('local')(req, res, () => {
-          req.flash('success', "Welcome to the YelpCamp " + user.username );
+          req.flash('success', "Sucessfully signed up! Welcome to the YelpCamp ");
           res.redirect('/campgrounds');
       });
     });
@@ -31,7 +35,7 @@ router.post('/register', (req, res) => {
   
 //Render Login page
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', {page: 'login'});
 });
 
 //handling Login logic
@@ -40,7 +44,7 @@ router.post('/login', passport.authenticate('local',  {
     failureRedirect: '/login'
   }
 ), (req, res) => {
-    req.flash('success', 'Welcome back ' + req.user.username.charAt(0).toUpperCase().slice(1) + '!');
+    req.flash('success', 'Welcome back ' + req.user.username + '!');
     res.redirect('/campgrounds');
 });
   

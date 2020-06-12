@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express         = require('express'),
     bodyParser      = require('body-parser'),
     port            = process.env.PORT || 4000,
@@ -19,14 +20,15 @@ var commentRoutes = require('./routes/comments'),
 const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 };
 
 const url = process.env.DATABASE_URL;
 
 mongoose.connect(url, options)
     .then(()=>{
-        console.log("Connected to the DB: yelp_camp_v7");
+        console.log(`Connected to the DB:  ${process.env.DB_NAME}`);
     })
     .catch((err)=>{
         console.log(`Error: </br> ${err.message}`);
@@ -40,6 +42,7 @@ app.set("view engine","ejs");
 app.use(express.static(__dirname+ '/public'));
 app.use(methodOverride("_method"));
 app.use(flash());
+app.locals.moment = require('moment');
 
 //Requirement Express session
 app.use(require('express-session')({
@@ -73,5 +76,5 @@ app.use('/campgrounds', campgroundsRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
 
 app.listen(port, process.env.OPENSHIFT_NODEJS_PORT, () => {
-    console.log("YelpCamp V10 has started! on port: " + port);
+    console.log("YelpCamp V11 has started! on port: " + port);
 });
