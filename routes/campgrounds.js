@@ -154,7 +154,7 @@ router.delete("/:id", middleware.checkCampgroundOwnership, (req, res) => {
       req.flash("error", "Campground couldn't be removed");
       res.redirect("/campgrounds");
     } else {
-      req.flash("success", "Campground Sucessfully removed");
+      req.flash("success", "Campground Successfully removed");
       res.redirect("/campgrounds");
     }
   });
