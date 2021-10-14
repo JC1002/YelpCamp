@@ -7,17 +7,17 @@ var express         = require('express'),
     passport        = require('passport'),
     LocalStrategy   = require('passport-local'),
     methodOverride  = require('method-override'),
-    Campground      = require('./models/campgrounds'),
-    Comment         = require('./models/comments'),
     User            = require('./models/user'),
     seedDB          = require('./seeds');
+    
+const databaseConnection = require('./database_connection/database')();
 
 var commentRoutes = require('./routes/comments'),
     campgroundsRoutes = require('./routes/campgrounds'),
     indexRoutes = require('./routes/index');
 
 //Database connection   
-const options = {
+/* const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
@@ -33,7 +33,10 @@ mongoose.connect(url, options)
     .catch((err)=>{
         console.log(`Error: </br> ${err.message}`);
         process.exit(1);
-});
+}); */
+
+
+//Database connection  
 
 //seedDB();
 var app = express();

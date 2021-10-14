@@ -7,20 +7,24 @@
     <p>
       <a href="/campgrounds/new" class="btn btn-primary btn-lg">Add New Campground</a>
     </p>
+    <p>
+      <form action="/campgrounds" method="GET" class="form-inline">
+        <div class="form-group">
+          <input type="text" name="search" placeholder="Campground Search..." class="form-control" required>
+          <button type="submit" value="Search" class="btn btn-default">Search</button>
+        </div>
+      </form>
+    </p>
   </div>
 </header>
 
-<div class="row">
-  <div class="col-lg-12">
-    <h3>Our Most Popular</h3>
-  </div>
-</div>
-
 <div class="row text-center sibling-fade" style="display: flex; flex-wrap: wrap;">
   <% campgrounds.forEach((campground) =>{ %>
-  <div class="col-md-3 col-sm-6">
+  <div id="divImage" class="col-md-3 col-sm-6 col-xs-6">
     <div class="thumbnail">
-      <img src="<%= campground.image %>">
+      <a href="/campgrounds/<%= campground._id %>">
+        <img src="<%= campground.image %>">
+      </a>
       <div class="caption">
         <h4><%= campground.name %></h4>
       </div>

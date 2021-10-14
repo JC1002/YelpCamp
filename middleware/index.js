@@ -22,8 +22,7 @@ middlewareObj.checkCampgroundOwnership = (req, res, next) => {
       } else {
         //Check owner ID
         if (
-          foundCampground.author.id.equals(req.user._id) ||
-          req.user.isAdmin
+          foundCampground.author.id.equals(req.user._id) || req.user.isAdmin
         ) {
           next();
         } else {

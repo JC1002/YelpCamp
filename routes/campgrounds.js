@@ -3,8 +3,6 @@ const router = express.Router();
 const Campground = require("../models/campgrounds");
 const middleware = require("../middleware");
 const NodeGeocoder = require("node-geocoder");
-const multer = require("multer");
-const cloudinary = require('cloudinary');
 
 const options = {
   provider: "google",
@@ -13,49 +11,50 @@ const options = {
   formatter: null,
 };
 
-const geocoder = NodeGeocoder(options);
-
-var storage = multer.diskStorage({
-    filename: (req, file, callback) => {
-      callback(null, Date.now() + file.originalname);
-    }
-});
-var imageFilter =  (req, file, cb) => {
-    //RegEx to accept images only
-    if(!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-      return cb(new Error('Only image files are allowed!'), false);
-    }
-    cb(null, true);
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
-var upload = multer({storage: storage, fileFilter: imageFilter});
 
-//Cloudinary config
-cloudinary.config({
-  cloud_name: 'jn1002', 
-  api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
+const geocoder = NodeGeocoder(options);
+let page = "campgrounds";
 //INDEX - Show all campground
 router.get("/", function (req, res) {
-  Campground.find({}, function (err, allCampgrounds) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("campgrounds/campgrounds", {
-        campgrounds: allCampgrounds,
-        page: "campgrounds",
+  if(req.query.search) {
+    const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+    Campground.find({name: regex}, function (err, allCampgrounds) {
+      if (err) {
+        console.log(err);
+      } else {
+        if(allCampgrounds.length < 1 ) {
+          req.flash('error', 'No campground match that query, please try again');
+          return res.redirect('back');
+        }
+        res.render("campgrounds/campgrounds",{ campgrounds: allCampgrounds, page});
+      }
+    });
+  } else {
+      Campground.find({}, function (err, allCampgrounds) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("campgrounds/campgrounds", { campgrounds: allCampgrounds, page});
+        }
       });
     }
-  });
 });
 
 //CREATE - add new campground to DB
-router.post("/", middleware.isLoggedIn, upload.single('image'), function (req, res) {
+router.post("/", middleware.isLoggedIn, function (req, res) {
   // get data from form and add to campgrounds array
   var name = req.body.campground.name;
   var desc = req.body.campground.description;
   var price = req.body.campground.price;
+  var image = req.body.campground.image;
+  // add author to campground
+  var author = req.body.campground.author = {
+    id: req.user._id,
+    username: req.user.username
+  }
   
   geocoder.geocode(req.body.campground.location, function (err, data) {
     if (err || !data.length) {
@@ -65,15 +64,6 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function (req, r
     var lat = data[0].latitude;
     var lng = data[0].longitude;
     var location = data[0].formattedAddress;
-
-    cloudinary.uploader.upload(req.file.path, function(result) {
-      // add cloudinary url for the image to the campground object under image property
-      var image = req.body.campground.image = result.secure_url;
-      // add author to campground
-      var author = req.body.campground.author = {
-        id: req.user._id,
-        username: req.user.username
-      }
       var newCampground = {
         name,
         image,
@@ -91,7 +81,6 @@ router.post("/", middleware.isLoggedIn, upload.single('image'), function (req, r
         }
         res.redirect('/campgrounds/' + campground.id);
       });
-    });
   });
 });
 
@@ -125,7 +114,7 @@ router.get("/:id/edit", middleware.checkCampgroundOwnership, (req, res) => {
 });
 
 // UPDATE CAMPGROUND ROUTE
-router.put("/:id", middleware.checkCampgroundOwnership, upload.single('image'), function (req, res) {
+router.put("/:id", middleware.checkCampgroundOwnership, function (req, res) {
   geocoder.geocode(req.body.location, function (err, data) {
     if (err || !data.length) {
       req.flash("error", "Invalid address");
